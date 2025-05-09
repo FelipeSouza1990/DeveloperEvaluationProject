@@ -3,12 +3,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
+using Ambev.DeveloperEvaluation.Domain.Sales.Entities;
 
 namespace Ambev.DeveloperEvaluation.ORM;
 
 public class DefaultContext : DbContext
 {
     public DbSet<User> Users { get; set; }
+	
+	public DbSet<Sale> Sales { get; set; }
+	
+    public DbSet<SaleItem> SaleItems { get; set; }
 
     public DefaultContext(DbContextOptions<DefaultContext> options) : base(options)
     {
@@ -18,6 +23,10 @@ public class DefaultContext : DbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(modelBuilder);
+		
+		modelBuilder.ApplyConfiguration(new Mappings.SaleMap());
+		
+        modelBuilder.ApplyConfiguration(new Mappings.SaleItemMap());
     }
 }
 public class YourDbContextFactory : IDesignTimeDbContextFactory<DefaultContext>

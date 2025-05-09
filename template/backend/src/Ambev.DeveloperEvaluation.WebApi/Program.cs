@@ -24,6 +24,7 @@ public class Program
             builder.AddDefaultLogging();
 
             builder.Services.AddControllers();
+			builder.Services.AddProjectDependencies(builder.Configuration);
             builder.Services.AddEndpointsApiExplorer();
 
             builder.AddBasicHealthChecks();
