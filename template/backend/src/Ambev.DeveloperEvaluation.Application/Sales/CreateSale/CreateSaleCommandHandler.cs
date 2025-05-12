@@ -1,17 +1,14 @@
 using Ambev.DeveloperEvaluation.Domain.Sales.Entities;
-using MediatR;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Ambev.DeveloperEvaluation.Domain.Sales.Repositories;
+using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale
 {
-    public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, Guid>
+    public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Guid>
     {
         private readonly ISaleRepository _repository;
 
-        public CreateSaleHandler(ISaleRepository repository)
+        public CreateSaleCommandHandler(ISaleRepository repository)
         {
             _repository = repository;
         }
@@ -32,6 +29,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale
             }
 
             await _repository.AddAsync(sale);
+
             return sale.Id;
         }
     }

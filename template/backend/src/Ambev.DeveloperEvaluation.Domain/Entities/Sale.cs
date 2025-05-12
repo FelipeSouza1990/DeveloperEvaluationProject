@@ -1,9 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Ambev.DeveloperEvaluation.Domain.Sales.Entities
+﻿namespace Ambev.DeveloperEvaluation.Domain.Sales.Entities
 {
     public class Sale
     {
@@ -30,6 +25,32 @@ namespace Ambev.DeveloperEvaluation.Domain.Sales.Entities
             BranchId = branchId;
             BranchName = branchName;
             IsCancelled = false;
+        }
+
+        public void Update(
+            string saleNumber,
+            Guid customerId,
+            string customerName,
+            Guid branchId,
+            string branchName,
+            List<(Guid ProductId, string ProductName, int Quantity, decimal UnitPrice)> updatedItems
+)
+        {
+            SaleNumber = saleNumber;
+            CustomerId = customerId;
+            CustomerName = customerName;
+            BranchId = branchId;
+            BranchName = branchName;
+
+            Items.Clear();
+
+            foreach (var item in updatedItems)
+            {
+                if (item.Quantity > 20)
+                    throw new InvalidOperationException("Cannot sell more than 20 items of the same product.");
+
+                Items.Add(new SaleItem(Id, item.ProductId, item.ProductName, item.Quantity, item.UnitPrice));
+            }
         }
 
         public void AddItem(Guid productId, string productName, int quantity, decimal unitPrice)

@@ -1,0 +1,12 @@
+services:
+  ambev_developer_evaluation_database:
+    container_name: ambev_developer_evaluation_database
+    image: postgres:13
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: dummy
+      POSTGRES_DB: dummy
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql

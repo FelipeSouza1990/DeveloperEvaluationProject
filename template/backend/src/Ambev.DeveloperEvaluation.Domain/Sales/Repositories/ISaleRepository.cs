@@ -1,12 +1,15 @@
 using Ambev.DeveloperEvaluation.Domain.Sales.Entities;
-using System;
-using System.Threading.Tasks;
 
-namespace Ambev.DeveloperEvaluation.Domain.Sales.Repositories
+namespace Ambev.DeveloperEvaluation.Domain.Sales.Repositories;
+
+public interface ISaleRepository
 {
-    public interface ISaleRepository
-    {
-        Task AddAsync(Sale sale);
-        //Implementar posteriormente os métodos de GetById, Update, Delete entre outros
-    }
+    Task AddAsync(Sale sale);
+    Task<Sale?> GetByIdAsync(Guid id);
+    Task<IEnumerable<Sale>> GetAllAsync();
+    Task SaveChangesAsync();
+    Task<IEnumerable<Sale>> GetByCustomerIdAsync(Guid customerId);
+    Task<IEnumerable<Sale>> GetByBranchIdAsync(Guid branchId);
+    Task UpdateAsync(Sale sale);
+
 }

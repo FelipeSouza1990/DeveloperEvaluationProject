@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  ambev.developerevaluation.database:
+    image: postgres:13
+    container_name: ambev_developer_evaluation_database
+    environment:
+      POSTGRES_DB: developer_evaluation
+      POSTGRES_USER: developer
+      POSTGRES_PASSWORD: ev@luAt10n
+    ports:
+      - "5432:5432"
+    volumes:
+      - developer_evaluation_pgdata:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  developer_evaluation_pgdata:

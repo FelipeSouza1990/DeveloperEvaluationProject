@@ -1,3 +1,4 @@
+using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Domain.Sales.Repositories;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.ORM.Repositories;
@@ -13,14 +14,15 @@ namespace Ambev.DeveloperEvaluation.IoC
     {
         public static IServiceCollection AddProjectDependencies(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<DefaultContext>(options =>
+                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
 
             services.AddScoped<ISaleRepository, SaleRepository>();
-
-
-            services.AddMediatR(Assembly.Load("Ambev.DeveloperEvaluation.Application"));
+            services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(typeof(CreateSaleCommand).Assembly);
+            });
 
             return services;
         }

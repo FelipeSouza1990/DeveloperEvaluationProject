@@ -9,6 +9,8 @@ using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using Microsoft.OpenApi.Models;
+using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
 
@@ -53,6 +55,21 @@ public class Program
 
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Ambev Developer Evaluation API",
+                    Version = "v1",
+                    Description = "API para gerenciamento de vendas, clientes e filiais."
+                });
+            });
+
+            builder.Services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(typeof(UpdateSaleCommandHandler).Assembly);
+            });
+
             var app = builder.Build();
             app.UseMiddleware<ValidationExceptionMiddleware>();
 
@@ -70,6 +87,17 @@ public class Program
             app.UseBasicHealthChecks();
 
             app.MapControllers();
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Ambev Developer Evaluation API V1");
+                    c.RoutePrefix = string.Empty;
+                });
+            }
+
 
             app.Run();
         }
