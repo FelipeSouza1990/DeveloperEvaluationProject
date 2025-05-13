@@ -30,8 +30,10 @@ public class GetSalesByBranchQueryHandlerTests
         var sale2 = new Sale("S002", Guid.NewGuid(), "Cliente 2", branchId, "Filial 1");
         sale2.AddItem(Guid.NewGuid(), "Produto 2", 1, 15.0m);
 
-        _repositoryMock.Setup(r => r.GetByBranchIdAsync(branchId))
-                       .ReturnsAsync(new List<Sale> { sale1, sale2 });
+        var unrelatedSale = new Sale("S003", Guid.NewGuid(), "Cliente 3", Guid.NewGuid(), "Outra Filial");
+
+        _repositoryMock.Setup(r => r.GetAllAsync())
+                       .ReturnsAsync(new List<Sale> { sale1, sale2, unrelatedSale });
 
         var query = new GetSalesByBranchQuery(branchId);
 

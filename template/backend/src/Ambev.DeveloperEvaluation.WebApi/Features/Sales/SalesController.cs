@@ -85,16 +85,5 @@ public class SalesController : ControllerBase
         return NoContent();
     }
 
-    [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateSaleCommand command)
-    {
-        if (id != command.SaleId)
-            return BadRequest("Id in route does not match command");
-
-        await _mediator.Send(command);
-        return NoContent();
-
-    }
-
 
 }

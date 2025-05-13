@@ -30,14 +30,14 @@ public class Program
             builder.Services.AddEndpointsApiExplorer();
 
             builder.AddBasicHealthChecks();
-            builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<DefaultContext>(options =>
-                options.UseNpgsql(
-                    builder.Configuration.GetConnectionString("DefaultConnection"),
-                    b => b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM")
-                )
-            );
+                  options.UseSqlite("Data Source=dev.db"));
+            //    options.UseNpgsql(
+            //        builder.Configuration.GetConnectionString("DefaultConnection"),
+            //        b => b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM")
+            //    )
+            //);
 
             builder.Services.AddJwtAuthentication(builder.Configuration);
 
@@ -63,6 +63,8 @@ public class Program
                     Version = "v1",
                     Description = "API para gerenciamento de vendas, clientes e filiais."
                 });
+                c.EnableAnnotations();
+                c.CustomSchemaIds(type => type.FullName);
             });
 
             builder.Services.AddMediatR(cfg =>
@@ -72,12 +74,6 @@ public class Program
 
             var app = builder.Build();
             app.UseMiddleware<ValidationExceptionMiddleware>();
-
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
 
             app.UseHttpsRedirection();
 

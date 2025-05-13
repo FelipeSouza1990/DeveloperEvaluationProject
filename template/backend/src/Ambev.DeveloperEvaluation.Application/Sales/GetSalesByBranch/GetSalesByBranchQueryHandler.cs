@@ -15,6 +15,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.GetSalesByBranch
         public async Task<List<GetSalesByBranchDto>> Handle(GetSalesByBranchQuery request, CancellationToken cancellationToken)
         {
             var sales = await _repository.GetAllAsync();
+
             return sales
                 .Where(s => s.BranchId == request.BranchId)
                 .Select(s => new GetSalesByBranchDto
@@ -23,6 +24,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.GetSalesByBranch
                     SaleNumber = s.SaleNumber,
                     Date = s.Date,
                     CustomerName = s.CustomerName,
+                    BranchId = s.BranchId,
                     TotalAmount = s.TotalAmount,
                     IsCancelled = s.IsCancelled
                 }).ToList();

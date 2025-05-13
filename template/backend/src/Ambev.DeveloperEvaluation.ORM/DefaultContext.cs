@@ -4,48 +4,56 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
 using Ambev.DeveloperEvaluation.Domain.Sales.Entities;
+using Microsoft.EntityFrameworkCore.Sqlite;
 
-namespace Ambev.DeveloperEvaluation.ORM;
-
-public class DefaultContext : DbContext
+namespace Ambev.DeveloperEvaluation.ORM
 {
-    public DbSet<User> Users { get; set; }
-	
-	public DbSet<Sale> Sales { get; set; }
-	
-    public DbSet<SaleItem> SaleItems { get; set; }
-
-    public DefaultContext(DbContextOptions<DefaultContext> options) : base(options)
+    public class DefaultContext : DbContext
     {
+        public DbSet<User> Users { get; set; }
+        public DbSet<Sale> Sales { get; set; }
+        public DbSet<SaleItem> SaleItems { get; set; }
+
+        public DefaultContext(DbContextOptions<DefaultContext> options) : base(options) { }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.ApplyConfiguration(new Mappings.SaleMap());
+            modelBuilder.ApplyConfiguration(new Mappings.SaleItemMap());
+        }
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    public class YourDbContextFactory : IDesignTimeDbContextFactory<DefaultContext>
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-        base.OnModelCreating(modelBuilder);
-		
-		modelBuilder.ApplyConfiguration(new Mappings.SaleMap());
-		
-        modelBuilder.ApplyConfiguration(new Mappings.SaleItemMap());
-    }
-}
-public class YourDbContextFactory : IDesignTimeDbContextFactory<DefaultContext>
-{
-    public DefaultContext CreateDbContext(string[] args)
-    {
-        IConfigurationRoot configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .Build();
+        public DefaultContext CreateDbContext(string[] args)
+        {
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
 
-        var builder = new DbContextOptionsBuilder<DefaultContext>();
-        var connectionString = "Host=127.0.0.1;Port=5432;Database=developer_evaluation;Username=postgres;Password=root";
+            var builder = new DbContextOptionsBuilder<DefaultContext>();
 
-        builder.UseNpgsql(
-               connectionString,
-               b => b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM")
-        );
+            var useSqlite = true;
 
-        return new DefaultContext(builder.Options);
+            if (useSqlite)
+            {
+                builder.UseSqlite("Data Source=dev.db");
+            }
+            else
+            {
+                var connectionString = "Host=127.0.0.1;Port=5432;Database=developer_evaluation;Username=postgres;Password=root";
+
+                builder.UseNpgsql(
+                    connectionString,
+                    b => b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM")
+                );
+            }
+
+            return new DefaultContext(builder.Options);
+        }
     }
 }

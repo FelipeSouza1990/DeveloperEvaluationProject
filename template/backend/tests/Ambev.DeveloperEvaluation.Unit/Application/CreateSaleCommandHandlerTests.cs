@@ -2,6 +2,7 @@
 using Ambev.DeveloperEvaluation.Domain.Sales.Entities;
 using Ambev.DeveloperEvaluation.Domain.Sales.Repositories;
 using FluentAssertions;
+using MediatR;
 using Moq;
 using Xunit;
 
@@ -11,11 +12,13 @@ namespace Ambev.DeveloperEvaluation.Unit.Application
     {
         private readonly Mock<ISaleRepository> _repositoryMock;
         private readonly CreateSaleCommandHandler _handler;
+        private readonly Mock<IMediator> _mediatorMock;
 
         public CreateSaleCommandHandlerTests()
         {
             _repositoryMock = new Mock<ISaleRepository>();
-            _handler = new CreateSaleCommandHandler(_repositoryMock.Object);
+            _mediatorMock = new Mock<IMediator>(); // novo mock
+            _handler = new CreateSaleCommandHandler(_repositoryMock.Object, _mediatorMock.Object); // passando os dois
         }
 
         [Fact]

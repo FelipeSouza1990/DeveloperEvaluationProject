@@ -49,12 +49,13 @@ namespace Ambev.DeveloperEvaluation.Unit.Application.Sales
             // Assert
             result.Should().Be(MediatR.Unit.Value);
             _repositoryMock.Verify(r => r.GetByIdAsync(saleId), Times.Once);
-            _repositoryMock.Verify(r => r.UpdateAsync(existingSale), Times.Once);
+            _repositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
         }
 
         [Fact]
-        public async Task Handle_Should_Return_False_When_Sale_Not_Found()
+        public async Task Handle_Should_Throw_Exception_When_Sale_Not_Found()
         {
+            // Arrange
             var command = new UpdateSaleCommand
             {
                 SaleId = Guid.NewGuid(),
@@ -68,8 +69,9 @@ namespace Ambev.DeveloperEvaluation.Unit.Application.Sales
 
             _repositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Sale?)null);
 
+            // Act & Assert
             await Assert.ThrowsAsync<Exception>(() => _handler.Handle(command, CancellationToken.None));
-            _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Sale>()), Times.Never);
+            _repositoryMock.Verify(r => r.SaveChangesAsync(), Times.Never);
         }
     }
 }
